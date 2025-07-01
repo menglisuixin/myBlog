@@ -1,7 +1,5 @@
 package org.gdkm.springbootxiangmushizhan.web.admin;
 
-
-
 import com.github.pagehelper.PageInfo;
 import org.gdkm.springbootxiangmushizhan.modle.ResponseData.ArticleResponseData;
 import org.gdkm.springbootxiangmushizhan.modle.ResponseData.StaticticsBo;
@@ -9,6 +7,7 @@ import org.gdkm.springbootxiangmushizhan.modle.domain.Article;
 import org.gdkm.springbootxiangmushizhan.modle.domain.Comment;
 import org.gdkm.springbootxiangmushizhan.service.IArticleService;
 import org.gdkm.springbootxiangmushizhan.service.ISiteService;
+import org.gdkm.springbootxiangmushizhan.service.ICommentService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +25,8 @@ public class AdminController {
     private ISiteService siteServiceImpl;
     @Autowired
     private IArticleService articleServiceImpl;
+    @Autowired
+    private ICommentService commentServiceImpl;
 
     // 管理中心起始页
     @GetMapping(value = {"", "/index"})
@@ -106,5 +107,28 @@ public class AdminController {
             return ArticleResponseData.fail();
         }
     }
-}
+    // 跳转到后台评论列表页面
+    @GetMapping(value = "/comment")
+    public String commentList(@RequestParam(value = "page", defaultValue = "1") int page,
+                              @RequestParam(value = "count", defaultValue = "10") int count,
+                              HttpServletRequest request) {
+        int offset = (page - 1) * count;
+        List<Comment> comments = commentServiceImpl.selectAllCommentsWithPage(offset, count);
+        request.setAttribute("comments", comments);
+        return "back/comments_list";
+    }
 
+    // 删除评论
+    @PostMapping(value = "/comment/delete")
+    @ResponseBody
+    public ArticleResponseData deleteComment(@RequestParam int id) {
+        try {
+            commentServiceImpl.deleteCommentById(id);
+            logger.info("评论删除成功");
+            return ArticleResponseData.ok();
+        } catch (Exception e) {
+            logger.error("评论删除失败，错误信息: " + e.getMessage());
+            return ArticleResponseData.fail();
+        }
+    }
+}

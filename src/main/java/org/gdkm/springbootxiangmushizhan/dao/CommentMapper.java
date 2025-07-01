@@ -26,4 +26,11 @@ public interface CommentMapper {
 //    通过文章id删除评论
     @Delete("delete from t_comment where article_id = #{aid}")
     public void deleteCommentWithId(Integer aid);
+// 分页查询所有评论
+    @Select("select * from t_comment order by id desc limit #{offset}, #{limit}")
+    public List<Comment> selectAllCommentsWithPage(int offset, int limit);
+
+    // 根据评论id删除评论
+    @Delete("delete from t_comment where id = #{id}")
+    public void deleteCommentById(Integer id);
 }

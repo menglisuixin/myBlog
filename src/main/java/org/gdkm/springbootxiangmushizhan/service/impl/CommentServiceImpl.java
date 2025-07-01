@@ -37,4 +37,15 @@ public class CommentServiceImpl implements ICommentService {
         statistic.setCommentsNum(statistic.getCommentsNum()+1);
         statisticMapper.updateArticleCommentsWithId(statistic);
     }
+ // 分页查询所有评论
+    @Override
+    public List<Comment> selectAllCommentsWithPage(int offset, int limit) {
+        return commentMapper.selectAllCommentsWithPage(offset, limit);
+    }
+
+    // 根据评论id删除评论
+    @Override
+    public void deleteCommentById(Integer id) {
+        commentMapper.deleteCommentById(id);
+    }
 }

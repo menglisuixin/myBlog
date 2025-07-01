@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>评论列表</title>
+</head>
+
+<body>
+    <h4 class="page-title">评论列表</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>评论ID</th>
+                <th>文章ID</th>
+                <th>评论作者</th>
+                <th>评论内容</th>
+                <th>评论日期</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <th:block th:each="comment : ${comments}">
+                <tr>
+                    <td th:text="${comment.id}"></td>
+                    <td th:text="${comment.articleId}"></td>
+                    <td th:text="${comment.author}"></td>
+                    <td th:text="${comment.content}"></td>
+                    <td th:text="${#dates.format(comment.created, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                    <td>
+                        <a href="javascript:void(0)" th:onclick="deleteComment(${comment.id})">删除</a>
+                    </td>
+                </tr>
+            </th:block>
+        </tbody>
+    </table>
+
+    <script type="text/javascript">
+        function deleteComment(id) {
+            if (confirm("确定要删除该评论吗？")) {
+                $.ajax({
+                    type: 'post',
+                    url: '/admin/comment/delete',
+                    data: { id: id },
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result && result.success) {
+                            alert("评论删除成功");
+                            window.location.reload();
+                        } else {
+                            alert("评论删除失败");
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>
